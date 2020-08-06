@@ -1,17 +1,22 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const util = require("util");
+//const util = require("util");
+const path = require("path");
 
+// 2 way
 // const lstat = util.promisify(fs.lstat);
-const { lstat } = fs.promises;
 
-fs.readdir(process.cwd(), async (err, filenames) => {
+// 3 way
+const { lstat } = fs.promises;
+const targetDir = process.argv[2] || process.cwd();
+
+fs.readdir(targetDir, async (err, filenames) => {
   if (err) {
     throw new Error(err);
   }
   const statPromise = filenames.map((filename) => {
-    return lstat(filename);
+    return lstat(path.join(targetDir, filename));
   });
 
   const allStats = await Promise.all(statPromise);
@@ -25,6 +30,7 @@ fs.readdir(process.cwd(), async (err, filenames) => {
   }
 });
 
+// 1 way
 // const lstat = (filename) => {
 //   return new Promise((resolve, reject) => {
 //     fs.lstat(filename, (err, stats) => {
